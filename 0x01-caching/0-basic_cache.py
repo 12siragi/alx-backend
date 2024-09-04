@@ -5,34 +5,30 @@ BasicCache module
 
 from base_caching import BaseCaching
 
+
 class BasicCache(BaseCaching):
+    """ BasicCache module:
+      Inherits from the BaseCaching module
     """
-    BasicCache is a caching system that inherits from BaseCaching.
-    This caching system doesn't have a limit on the number of items it stores.
-    """
+    def __init__(self):
+        """
+        initialize class instance
+        """
+        super().__init__()
+        self.cache_data = {}
 
     def put(self, key, item):
         """
-        Add an item to the cache.
-
-        Args:
-            key: The key under which the item should be stored.
-            item: The item to be stored in the cache.
-
-        If key or item is None, this method should not do anything.
+        add an item to the caching system
         """
-        if key is not None and item is not None:
+        if key and item:
             self.cache_data[key] = item
 
     def get(self, key):
         """
-        Retrieve an item from the cache.
-
-        Args:
-            key: The key corresponding to the item to retrieve.
-
-        Returns:
-            The value in self.cache_data linked to the key, or None if
-            the key is None or doesn't exist in the cache.
+        Returns: item associated with the key
+        None if the key is not in the cache
         """
-        return self.cache_data.get(key, None)
+        if key in self.cache_data:
+            return self.cache_data[key]
+        return None
