@@ -1,48 +1,45 @@
 #!/usr/bin/env python3
+"""A Basic Flask app with internationalization support.
 """
-    Contains a basic flask app displaying 'Welcome to Holberton' on
-    a single route '/'
-"""
-
-
-from flask import Flask, render_template, request
 from flask_babel import Babel
-from os import getenv
+from flask import Flask, render_template, request
 
 
-app = Flask(__name__, static_url_path='')
-babel = Babel(app)
+class Config:
+    """Represents a Flask Babel configuration.
+    """
+    LANGUAGES = ["en", "fr"]
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_DEFAULT_TIMEZONE = "UTC"
 
 
-class Config(object):
-    """configuration for babel"""
-    LANGUAGES = ['en', 'fr']
-    BABEL_DEFAULT_LOCALE = 'en'
-    BABEL_DEFAULT_TIMEZONE = 'UTC'
-
-
+app = Flask(__name__)
 app.config.from_object(Config)
-
-
-@app.route('/', methods=['GET'], strict_slashes=False)
-def index() -> str:
-    """this route renders 0-index.html template"""
-    return render_template('4-index.html')
+app.url_map.strict_slashes = False
+babel = Babel(app)
 
 
 @babel.localeselector
 def get_locale() -> str:
-    """this method checks the URL parameter for locale variable
-    and force the Locale of the app"""
-    if request.args.get('locale'):
-        lang = request.args.get('locale')
-        if lang in app.config['LANGUAGES']:
-            return lang
-    else:
-        return request.accept_languages.best_match(app.config['LANGUAGES'])
+    """Retrieves the locale for a web page.
+    """
+    queries = request.query_string.decode('utf-8').split('&')
+    query_table = dict(map(
+        lambda x: (x if '=' in x else '{}='.format(x)).split('='),
+        queries,
+    ))
+    if 'locale' in query_table:
+        if query_table['locale'] in app.config["LANGUAGES"]:
+            return query_table['locale']
+    return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
-if __name__ == "__main__":
-    host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
-    app.run(host=host, port=port)
+@app.route('/')
+def get_index() -> str:
+    """The home/index page.
+    """
+    return render_template('4-index.html')
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
