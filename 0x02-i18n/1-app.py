@@ -1,35 +1,30 @@
 #!/usr/bin/env python3
 """
-    Contains a basic flask app displaying 'Welcome to Holberton' on
-    a single route '/'
+    Basic Flask app with Babel setup.
 """
 
-
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 from flask_babel import Babel
-from os import getenv
 
-
-app = Flask(__name__, static_url_path='')
-babel = Babel(app)
-
-
-class Config(object):
-    """configuration for babel"""
+class Config:
+    """
+    Config class to configure Babel and the app.
+    """
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
 
-app.config.from_object('1-app.Config')
+app = Flask(__name__, static_url_path='')
+app.config.from_object(Config)
 
+# Instantiate the Babel object
+babel = Babel(app)
 
 @app.route('/', strict_slashes=False)
 def index() -> str:
-    """this route renders 0-index.html template"""
+    """This route renders the index page with Babel support."""
     return render_template('1-index.html')
 
-
 if __name__ == "__main__":
-    host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
-    app.run(host=host, port=port)
+    app.run(host="0.0.0.0", port=5000)
+
